@@ -9,12 +9,15 @@ import org.seckillproject.error.BusinessException;
 import org.seckillproject.error.EmBusinessError;
 import org.seckillproject.service.UserService;
 import org.seckillproject.service.model.UserModel;
+import org.seckillproject.validator.ValidationResult;
+import org.seckillproject.validator.ValidatorImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Validator;
 import java.beans.Transient;
 
 /**
@@ -28,6 +31,9 @@ public class UserServiceImpl implements UserService {
     private UserDOMapper userDOMapper;
     @Autowired
     private UserPasswordDOMapper userPasswordDOMapper;
+    
+    @Autowired
+    private ValidatorImpl validator;
     
     @Override
     public UserModel getUserById(Integer id) {
@@ -52,11 +58,16 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
 
-        if(StringUtils.isEmpty(userModel.getName()) 
-                || userModel.getAge() == null 
-                || userModel.getGender() == null || StringUtils.isEmpty(userModel.getTelphone())){
-            
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+//        if(StringUtils.isEmpty(userModel.getName()) 
+//                || userModel.getAge() == null 
+//                || userModel.getGender() == null || StringUtils.isEmpty(userModel.getTelphone())){
+//            
+//            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+//        }
+        
+        ValidationResult result = validator.validator(userModel);
+        if (result.isHasErrors()){
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,result.getErrMsg());
         }
         
         //实现model -> dataobject
@@ -66,7 +77,12 @@ public class UserServiceImpl implements UserService {
         }catch (DuplicateKeyException ex){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"手机号重复注册");
         }
-       
+
+//        try {
+//            userDOMapper.insertSelective(userDO);
+//        }catch (Exception ex){
+//            ex.printStackTrace();
+//        }
         
         userModel.setId(userDO.getId());
         
@@ -77,6 +93,29 @@ public class UserServiceImpl implements UserService {
         
     }
     
+
+    @Override
+    public UserModel validateLogin(String telphone, String encrptPassword) throws BusinessException {
+
+        //通过用户的手机获取用户信息
+        UserDO userDO = userDOMapper.selectByPrimaryTelphone(telphone);
+
+        if (userDO == null){
+            throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL);
+        }
+        UserPasswordDO userPasswordDO = userPasswordDOMapper.selectByUserId(userDO.getId());
+        UserModel userModel = convertFromDataObject(userDO,userPasswordDO);
+        
+        //对比用户信息内加密的密码是否和传输进来的密码相匹配
+        if (!StringUtils.equals(encrptPassword,userModel.getEncrptPassword())){
+            throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL);
+        }
+        return userModel;
+        
+        
+        
+    }
+
     private UserPasswordDO convertPasswordFromModel(UserModel userModel){
         
         if (userModel == null){
