@@ -17,8 +17,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Validator;
-import java.beans.Transient;
 
 /**
  * @author:ZhangYu
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService {
 //            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
 //        }
         
-        ValidationResult result = validator.validator(userModel);
+        ValidationResult result = validator.validate(userModel);
         if (result.isHasErrors()){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,result.getErrMsg());
         }
@@ -84,7 +82,7 @@ public class UserServiceImpl implements UserService {
 //            ex.printStackTrace();
 //        }
         
-        userModel.setId(userDO.getId());
+        userModel.setId(userModel.getId());
         
         UserPasswordDO userPasswordDO = convertPasswordFromModel(userModel);
         userPasswordDOMapper.insertSelective(userPasswordDO);

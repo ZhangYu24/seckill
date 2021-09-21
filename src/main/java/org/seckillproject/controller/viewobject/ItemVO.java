@@ -1,4 +1,4 @@
-package org.seckillproject.service.model;
+package org.seckillproject.controller.viewobject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -7,30 +7,16 @@ import java.math.BigDecimal;
 
 /**
  * @author:ZhangYu
- * @date:2021/09/15 23:19
+ * @date:2021/09/16 23:13
  */
-public class ItemModel {
-    
+public class ItemVO {
+
     private Integer id; //商品ID
-    
-    @NotBlank(message = "商品名称不能为空")
     private String title; //商品名称
-    
-    @NotNull(message = "商品价格不能为空")
-    @Min(value = 0 , message = "商品价格不能小于0")
     private BigDecimal price; //商品价格
-
-    @NotNull(message = "库存不能不填")
-    @Min(value = 0 , message = "商品库存不能小于0")
     private Integer stock; //商品库存
-
-    @NotNull(message = "商品描述不能为空")
     private String description; //商品描述
-
-    @Min(value = 0 , message = "商品销量不能小于0")
     private Integer sales; //商品销量
-
-    @NotNull(message = "图片信息不能为空")
     private String imgUrl; //商品图片url
 
     public Integer getId() {

@@ -1,5 +1,6 @@
 package org.seckillproject.validator;
 
+import org.seckillproject.service.model.ItemModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class ValidatorImpl implements InitializingBean {
     private Validator validator;
     
     //实现校验方法并返回校验结果
-    public ValidationResult validator(Object bean){
+    public ValidationResult validate(Object bean){
         final ValidationResult result = new ValidationResult();
         Set<ConstraintViolation<Object>> constraintValidationSet = validator.validate(bean);
         
@@ -41,4 +42,6 @@ public class ValidatorImpl implements InitializingBean {
         //将hibernate validator通过工厂的初始化方式使其实例化
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
+
+  
 }

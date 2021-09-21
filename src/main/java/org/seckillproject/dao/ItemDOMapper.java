@@ -1,5 +1,6 @@
 package org.seckillproject.dao;
 
+
 import org.seckillproject.dataobject.ItemDO;
 
 public interface ItemDOMapper {

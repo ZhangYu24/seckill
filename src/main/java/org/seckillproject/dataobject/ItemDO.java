@@ -1,5 +1,6 @@
 package org.seckillproject.dataobject;
 
+
 public class ItemDO {
     /**
      *

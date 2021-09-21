@@ -32,6 +32,20 @@ public class UserModel {
     @NotBlank(message = "密码不能空")
     private String encrptPassword;
 
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", gender=" + gender +
+                ", age=" + age +
+                ", telphone='" + telphone + '\'' +
+                ", registerMode='" + registerMode + '\'' +
+                ", thirdPartyId='" + thirdPartyId + '\'' +
+                ", encrptPassword='" + encrptPassword + '\'' +
+                '}';
+    }
+    
     public Integer getId() {
         return id;
     }
